@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magenta Text-Treppen Generator</title>
+    <style>
+        :root {
+            /* Magenta Farbpalette */
+            --primary-color: #d63384; /* Magenta/Dunkles Pink */
+            --primary-hover: #b02a6b;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .main-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        /* Layout für größere Bildschirme */
+        @media (min-width: 768px) {
+            .main-container {
+                flex-direction: row;
+                height: 600px; /* Feste Höhe für die Nebeneinander-Ansicht */
+            }
+            .panel {
+                width: 50%;
+                height: 100%;
+                overflow-y: auto;
+            }
+            .panel.left {
+                border-right: 1px solid var(--border-color);
+            }
+        }
+
+        .panel {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: var(--text-color);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: none;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            padding: 1rem 1.5rem;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-group-title {
+            width: 100%;
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 0.2rem;
+        }
+
+        button {
+            background-color: #fff;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        button.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .copy-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .placeholder-text {
+            color: #adb5bd;
+            font-style: italic;
+        }
+
+        /* Spezifische Stile für die Vorschau */
+        #outputText {
+            white-space: pre-wrap; /* Leerzeichen erhalten */
+            font-family: inherit;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        a { color: var(--primary-color); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Text-Treppen Generator</h1>
+        <p class="subtitle">Formatieren Sie Ihre LinkedIn- & Social-Media-Posts mit dem visuellen "Treppen"-Effekt.</p>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- EINGABE PANEL -->
+        <div class="panel left">
+            <label for="inputText">Eingabetext</label>
+            <textarea id="inputText" placeholder="Fügen Sie hier Ihre Liste oder Sätze ein...&#10;Ein Satz pro Zeile funktioniert am besten.&#10;Das Tool formatiert es automatisch."></textarea>
+        </div>
+
+    </div>
+
+    <!-- STEUERUNG -->
+    <div class="controls" style="width: 100%; max-width: 1000px; background: white; border-radius: 0 0 12px 12px; margin-top: -10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 10;">
+        
+        <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
+            <div class="control-group-title">Visuelle Formatierung (Einrückung)</div>
+            <div>
+                <button onclick="transform('visual-down')">↘ Treppe Abwärts</button>
+                <button onclick="transform('visual-up')">↗ Treppe Aufwärts</button>
+            </div>
+        </div>
+
+        <div style="width: 1px; height: 40px; background: #e9ecef; margin: 0 10px;"></div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
+            <div class="control-group-title">Sortierung (Zeilenlänge)</div>
+            <div>
+                <button onclick="transform('sort-asc')">Kurz nach Lang</button>
+                <button onclick="transform('sort-desc')">Lang nach Kurz</button>
+                <button onclick="transform('sort-sls')">Kurz-Lang-Kurz</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" style="border-top: none; height: auto; min-height: 200px;">
+        <!-- AUSGABE PANEL -->
+        <div class="panel" style="width: 100%;">
+            <div class="output-header">
+                <label for="outputText">Ergebnis</label>
+                <button class="copy-btn" onclick="copyToClipboard()">In Zwischenablage kopieren</button>
+            </div>
+            <textarea id="outputText" readonly placeholder="Ihr formatierter Text erscheint hier..."></textarea>
+        </div>
+    </div>
+
+    <footer>
+        Klon erstellt zur Analyse • <a href="#">Magenta Edition</a>
+    </footer>
+
+    <script>
+        const inputEl = document.getElementById('inputText');
+        const outputEl = document.getElementById('outputText');
+
+        // Hilfsmittel: Unicode-Leerzeichen für visuelle Einrückung
+        // Normale Leerzeichen werden oft gelöscht. Wir nutzen Non-Breaking Space (\u00A0).
+        const INDENT_CHAR = "\u00A0\u00A0\u00A0\u00A0"; // 4 NBSP sehen auf LinkedIn wie ein guter Schritt aus
+
+        function getLines(text) {
+            // Nach Zeilenumbruch trennen, leere Zeilen herausfiltern
+            return text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        }
+
+        function transform(mode) {
+            const text = inputEl.value;
+            if (!text) return;
+
+            let lines = getLines(text);
+            let resultLines = [];
+
+            switch(mode) {
+                case 'visual-down':
+                    // Zunehmende Leerzeichen
+                    resultLines = lines.map((line, index) => {
+                        return INDENT_CHAR.repeat(index) + line;
+                    });
+                    break;
+
+                case 'visual-up':
+                    // Abnehmende Leerzeichen
+                    const maxIdx = lines.length - 1;
+                    resultLines = lines.map((line, index) => {
+                        return INDENT_CHAR.repeat(maxIdx - index) + line;
+                    });
+                    break;
+
+                case 'sort-asc':
+                    // Sortieren nach Länge (Kurz nach Lang)
+                    resultLines = lines.sort((a, b) => a.length - b.length);
+                    break;
+
+                case 'sort-desc':
+                    // Sortieren nach Länge (Lang nach Kurz)
+                    resultLines = lines.sort((a, b) => b.length - a.length);
+                    break;
+
+                case 'sort-sls':
+                    // Kurz-Lang-Kurz (Abwechselnd)
+                    lines.sort((a, b) => a.length - b.length); // Erst aufsteigend sortieren
+                    let left = 0;
+                    let right = lines.length - 1;
+                    while (left <= right) {
+                        if (left === right) {
+                            resultLines.push(lines[left]);
+                        } else {
+                            resultLines.push(lines[left]);   // Kürzeste verfügbare
+                            resultLines.push(lines[right]);  // Längste verfügbare
+                        }
+                        left++;
+                        right--;
+                    }
+                    break;
+            }
+
+            outputEl.value = resultLines.join('\n');
+        }
+
+        function copyToClipboard() {
+            const text = outputEl.value;
+            if (!text) return;
+            
+            outputEl.select();
+            outputEl.setSelectionRange(0, 99999); // Für Mobilgeräte
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "Kopiert!";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
